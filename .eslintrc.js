@@ -21,6 +21,8 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
 
+    '@typescript-eslint/no-unused-vars': 'error',
+
     // TODO remove this after initial coding
     '@typescript-eslint/no-empty-interface': 'off',
   },
