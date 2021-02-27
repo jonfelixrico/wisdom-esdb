@@ -1,13 +1,7 @@
 import { Module } from '@nestjs/common'
-import { SubmitInteractorService } from './submit-interactor/submit-interactor.service'
-import { ReceiveInteractorService } from './receive-interactor/receive-interactor.service'
-import { ApproveInteractorService } from './approve-interactor/approve-interactor.service'
+import { QuoteInteractorService } from './quote-interactor/quote-interactor.service'
 
 @Module({
-  providers: [
-    SubmitInteractorService,
-    ReceiveInteractorService,
-    ApproveInteractorService,
-  ],
+  providers: [QuoteInteractorService],
 })
 export class InteractorsModule {}
