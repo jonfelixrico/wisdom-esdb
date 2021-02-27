@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common'
+import { InteractorsModule } from './interactors/interactors.module'
 
 @Module({
-  imports: [],
+  imports: [InteractorsModule],
   controllers: [],
   providers: [],
 })
