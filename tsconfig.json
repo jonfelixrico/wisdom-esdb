@@ -14,7 +14,8 @@
 
     "paths": {
       "@src/*": ["./src/*"],
-      "@models/*": ["./src/models/*"]
+      "@models/*": ["./src/models/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   }
 }
