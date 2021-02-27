@@ -13,9 +13,10 @@
     "incremental": true,
 
     "paths": {
-      "@src/*": ["./src/*"],
+      "@/*": ["./src/*"],
       "@models/*": ["./src/models/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@discord/*": ["./src/discord/*"]
     }
   }
 }
