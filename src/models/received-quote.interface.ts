@@ -1,13 +1,10 @@
 import { IQuote } from '@models/quote.interface'
 import { Snowflake } from 'discord.js'
+import { ICommandLocation } from './command-location.interface'
 
-export interface IReceiveBody {
+export interface IReceiveBody extends ICommandLocation {
   receiveDt: Date
   receiveBy: Snowflake
-
-  channel: Snowflake
-  guild: Snowflake
-  message: Snowflake
 }
 
 export interface IReceivedQuote {

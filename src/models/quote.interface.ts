@@ -1,6 +1,7 @@
 import { Snowflake } from 'discord.js'
+import { ICommandLocation } from './command-location.interface'
 
-export interface IQuoteBody {
+export interface IQuoteBody extends ICommandLocation {
   content: string
   year: number
   author: Snowflake
@@ -8,11 +9,6 @@ export interface IQuoteBody {
   // who submitted the quote
   submitBy: Snowflake
   submitDt: Date
-
-  // where the quote was submitted
-  channel: Snowflake
-  guild: Snowflake
-  message: Snowflake
 }
 
 export interface IQuote extends IQuoteBody {
