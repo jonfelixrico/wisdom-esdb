@@ -14,12 +14,7 @@ export abstract class QuoteRepository {
     quoteId: string,
   ): Promise<IPendingQuote | IApprovedQuote | IDroppedQuote>
 
-  /**
-   * Retrieve an approved quote from the repository.
-   * @param quoteId If provided, then the repository will attempt to find the associated quote.
-   *   Else, a random approved quote will be returned.
-   */
-  abstract getApprovedQuote(quoteId?: string): Promise<IApprovedQuote>
+  abstract getRandomApprovedQuote(): Promise<IApprovedQuote>
 
   /**
    * Approves a pending quote.
