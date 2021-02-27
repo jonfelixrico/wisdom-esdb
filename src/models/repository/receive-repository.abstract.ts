@@ -1,8 +1,5 @@
-import { IReceiveBody, IReceivedQuote } from '@models/received-quote.interface'
+import { IReceiveBody, IReceive } from '@src/models/receive.interface'
 
 export abstract class ReceiveRepository {
-  abstract createReceive(
-    quoteId: string,
-    info: IReceiveBody,
-  ): Promise<IReceivedQuote>
+  abstract createReceive(quoteId: string, info: IReceiveBody): Promise<IReceive>
 }

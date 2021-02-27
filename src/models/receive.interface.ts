@@ -7,7 +7,7 @@ export interface IReceiveBody extends ICommandLocation {
   receiveBy: Snowflake
 }
 
-export interface IReceivedQuote {
+export interface IReceive {
   id: string
   quote: IQuote
 }
