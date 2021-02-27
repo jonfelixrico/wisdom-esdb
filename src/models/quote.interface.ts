@@ -1,8 +1,6 @@
 import { Snowflake } from 'discord.js'
 
-export interface IQuote {
-  id: string
-
+export interface IQuoteBody {
   content: string
   year: number
   author: Snowflake
@@ -15,4 +13,8 @@ export interface IQuote {
   channel: Snowflake
   guild: Snowflake
   message: Snowflake
+}
+
+export interface IQuote extends IQuoteBody {
+  id: string
 }
