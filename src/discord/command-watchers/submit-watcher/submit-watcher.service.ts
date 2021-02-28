@@ -4,8 +4,17 @@ import { Injectable } from '@nestjs/common'
 import { matchPrefix } from '@discord/utils/command-utils.util'
 import { map, filter } from 'rxjs/operators'
 import { Message } from 'discord.js'
+import { DISCORD_TAG_REGEXP } from '@discord/utils/discord-utils.util'
 
 const COMMAND_PREFIX = 'submit'
+
+/*
+ * The submit command accepts content and user mention as its parameters.
+ * There's also an optional param which is the year.
+ *
+ * I think its possible to combine both of these into one regexp but I'm
+ * just too lazy to exert more effort for this.
+ */
 const REGEXPS = [
   // <content> <userMention> <year>
   /^(.+?)\s+<@!?(\d+)>\s+(\d{4})$/,
@@ -39,35 +48,39 @@ export class SubmitWatcherService {
     return false
   }
 
-  get commandCalls$() {
-    return this.watcher.commandBus.pipe(
-      map((payload) => [
-        this.evaluateAndExtractArgs(payload.command),
-        payload.message,
-      ]),
-      filter(([extracted]) => !!extracted),
+  /**
+   * This is intended to check the message if the provided value in the author part
+   * of the syntax is an actual discord mention. The user has to be mentioned via Discord's
+   * acutal mention feature and not via explicitly providing a snowflake string.
+   * @param author
+   * @param message
+   */
+  private isAuthorMentionedInMessage(author: string, message: Message) {
+    return (
+      message.mentions.users.has(author) || message.mentions.members.has(author)
     )
   }
 
-  private checkIfClean(content: string, author: string, message: Message) {
-    // double check to see if the extracted author is indeed a mention and not just some author-ish literal
-    const isAuthorMentioned =
-      message.mentions.users.has(author) || message.mentions.members.has(author)
-    const mentionRegexp = /<@!?(\d+)>/g
+  /**
+   * The content of a message must be free from discord tags. Some examples of tags
+   * are mentions and uses of custom server emojis.
+   * @param content
+   */
+  private isContentFreeOfDiscordTags(content: string) {
+    return DISCORD_TAG_REGEXP.test(content)
+  }
 
-    // we're not allowing any mentions inside the content body.
-    let mentionsInContent = 0
-    while (mentionRegexp.exec(content)) {
-      mentionsInContent++
-    }
-
-    return isAuthorMentioned && mentionsInContent === 0
+  private isSubmissionClean(content: string, author: string, message: Message) {
+    return (
+      this.isContentFreeOfDiscordTags(content) &&
+      this.isAuthorMentionedInMessage(author, message)
+    )
   }
 
   private async handler([params, message]: [string[], Message]) {
     const [content, author, year] = params
 
-    if (!this.checkIfClean(content, author, message)) {
+    if (!this.isSubmissionClean(content, author, message)) {
       return
     }
 
@@ -78,24 +91,37 @@ export class SubmitWatcherService {
       return
     }
 
-    const placeholderMessage = await message.channel.send('🤔')
+    // these are ways to let the user know that their command has been acknowledged
+    message.react('🌬️')
+    const response = await message.channel.send('🤔')
+
     try {
       const submitDt = new Date()
       const submitted = await this.quoteInteractor.submitQuote({
         author,
         content,
-        year: parsedYear || submitDt.getFullYear(),
+        year: parsedYear || null,
         submitDt,
         submitBy: message.author.id,
 
         channel: message.channel.id,
         guild: message.guild.id,
-        message: placeholderMessage.id,
+        message: response.id,
       })
 
       // TODO format this properly
-      await placeholderMessage.edit(JSON.stringify(submitted))
+      await response.edit(JSON.stringify(submitted))
     } catch (e) {}
+  }
+
+  get commandCalls$() {
+    return this.watcher.commandBus.pipe(
+      map((payload) => [
+        this.evaluateAndExtractArgs(payload.command),
+        payload.message,
+      ]),
+      filter(([extracted]) => !!extracted),
+    )
   }
 
   private onInit() {
