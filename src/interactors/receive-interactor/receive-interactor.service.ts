@@ -19,4 +19,6 @@ export class ReceiveInteractorService {
 
     return await this.receiveRepo.createReceive(randomQuote.id, input)
   }
+
+  // TODO filtered receive quote
 }

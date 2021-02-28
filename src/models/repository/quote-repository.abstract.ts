@@ -14,6 +14,7 @@ export abstract class QuoteRepository {
     quoteId: string,
   ): Promise<IPendingQuote | IApprovedQuote | IDroppedQuote>
 
+  // TODO be able to filter by guild (required) and user (optional)
   abstract getRandomApprovedQuote(): Promise<IApprovedQuote>
 
   /**
