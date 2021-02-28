@@ -28,7 +28,7 @@ export class SubmitWatcherService {
     private watcher: PrefixWatcherService,
     private quoteInteractor: QuoteInteractorService,
   ) {
-    this.onInit()
+    this.listenToCommandBus()
   }
 
   private evaluateAndExtractArgs(command: string) {
@@ -114,7 +114,7 @@ export class SubmitWatcherService {
     } catch (e) {}
   }
 
-  get commandCalls$() {
+  get commandBus$() {
     return this.watcher.commandBus.pipe(
       map((payload) => [
         this.evaluateAndExtractArgs(payload.command),
@@ -124,7 +124,7 @@ export class SubmitWatcherService {
     )
   }
 
-  private onInit() {
+  private listenToCommandBus() {
     this.watcher.commandBus.subscribe(this.handler.bind(this))
   }
 }
