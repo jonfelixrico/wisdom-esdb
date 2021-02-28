@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { PrefixRepository } from '@discord/models/repositories/prefix-repository.abstract'
+import { PrefixRepository } from '@repositories/models/prefix-repository.abstract'
 import { Client, Message } from 'discord.js'
 import { Subject } from 'rxjs'
 import { matchPrefix } from '@discord/utils/command-utils.util'
