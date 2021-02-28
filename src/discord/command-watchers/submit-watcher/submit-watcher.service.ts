@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common'
 import { matchPrefix } from '@discord/utils/command-utils.util'
 import { map, filter } from 'rxjs/operators'
 import { Message } from 'discord.js'
-import { extractCommandLocation } from '@discord/utils/discord-utils.util'
 
 const COMMAND_PREFIX = 'submit'
 const REGEXPS = [
@@ -78,16 +77,23 @@ export class SubmitWatcherService {
       return
     }
 
-    const meta = extractCommandLocation(message)
+    const placeholderMessage = await message.channel.send('🤔')
+    try {
+      const submitted = await this.quoteInteractor.submitQuote({
+        author,
+        content,
+        year: parsedYear,
+        submitDt: new Date(),
+        submitBy: message.author.id,
 
-    await this.quoteInteractor.submitQuote({
-      author,
-      content,
-      year: parsedYear,
-      submitDt: new Date(),
-      submitBy: message.author.id,
-      ...meta,
-    })
+        channel: message.channel.id,
+        guild: message.guild.id,
+        message: placeholderMessage.id,
+      })
+
+      // TODO format this properly
+      await placeholderMessage.edit(JSON.stringify(submitted))
+    } catch (e) {}
   }
 
   private onInit() {
