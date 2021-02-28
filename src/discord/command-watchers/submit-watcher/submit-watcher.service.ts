@@ -71,19 +71,21 @@ export class SubmitWatcherService {
       return
     }
 
-    const parsedYear = Number(year)
-    // avoid years like '0011'
-    if (parsedYear < 1000) {
+    const parsedYear = year && Number(year)
+    // years like '0011' are invalid
+    if (parsedYear && parsedYear < 1000) {
+      // TODO respond with an error maybe?
       return
     }
 
     const placeholderMessage = await message.channel.send('🤔')
     try {
+      const submitDt = new Date()
       const submitted = await this.quoteInteractor.submitQuote({
         author,
         content,
-        year: parsedYear,
-        submitDt: new Date(),
+        year: parsedYear || submitDt.getFullYear(),
+        submitDt,
         submitBy: message.author.id,
 
         channel: message.channel.id,
