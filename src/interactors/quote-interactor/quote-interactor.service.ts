@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { QuoteRepository } from '@models/repository/quote-repository.abstract'
+import { QuoteRepository } from '@repositories/models/quote-repository.abstract'
 import { IQuoteBody } from '@models/quote.interface'
 import { generateId } from '@utils/id-generator.util'
 import { ErrorCodes } from '@models/error-codes.enum'

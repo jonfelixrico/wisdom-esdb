@@ -17,7 +17,8 @@
       "@models/*": ["./src/models/*"],
       "@utils/*": ["./src/utils/*"],
       "@discord/*": ["./src/discord/*"],
-      "@interactors/*": ["./src/interactors/*"]
+      "@interactors/*": ["./src/interactors/*"],
+      "@repositories/*": ["./src/repositories/*"]
     }
   }
 }

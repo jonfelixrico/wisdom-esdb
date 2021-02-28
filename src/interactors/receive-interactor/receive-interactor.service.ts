@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ReceiveRepository } from '@models/repository/receive-repository.abstract'
-import { QuoteRepository } from '@models/repository/quote-repository.abstract'
+import { ReceiveRepository } from '@repositories/models/receive-repository.abstract'
+import { QuoteRepository } from '@/repositories/models/quote-repository.abstract'
 import { IReceiveBody } from '@models/receive.interface'
 import { ErrorCodes } from '@models/error-codes.enum'
 
