@@ -1,14 +1,16 @@
-import { EventStoreDBClient } from '@eventstore/db-client'
 import { Module } from '@nestjs/common'
-import { PrefixRepositoryService } from './prefix-repository/prefix-repository.service'
-import { QuoteRepositoryService } from './quote-repository/quote-repository.service'
-import { ReceiveRepositoryService } from './receive-repository/receive-repository.service'
+import { EventStoreDBClient } from '@eventstore/db-client'
+import { QuoteRepositoryImplService } from './services/quote-repository-impl/quote-repository-impl.service'
+import { ReceiveRepositoryImplService } from './services/receive-repository-impl/receive-repository-impl.service'
+import { PrefixRepositoryImplService } from './services/prefix-repository-impl/prefix-repository-impl.service'
+import { EventStoreClientProvider } from './providers/event-store-client.provider'
 
 @Module({
   providers: [
-    PrefixRepositoryService,
-    QuoteRepositoryService,
-    ReceiveRepositoryService,
+    QuoteRepositoryImplService,
+    ReceiveRepositoryImplService,
+    PrefixRepositoryImplService,
+    EventStoreClientProvider,
   ],
 
   exports: [EventStoreDBClient],
