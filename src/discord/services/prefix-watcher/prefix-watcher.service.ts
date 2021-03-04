@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { PrefixRepository } from '@repositories/models/prefix-repository.abstract'
 import { Client, Message } from 'discord.js'
 import { Subject } from 'rxjs'
 import { matchPrefix } from '@discord/utils/command-utils.util'
+import { GuildRepository } from '@repositories/models/guild-repository.abstract'
 
 export interface ICommandBusPayload {
   command: string
@@ -13,7 +13,7 @@ export interface ICommandBusPayload {
 export class PrefixWatcherService {
   private emitter = new Subject<ICommandBusPayload>()
 
-  constructor(private client: Client, private prefixRepo: PrefixRepository) {
+  constructor(private client: Client, private guildRepo: GuildRepository) {
     this.onInit()
   }
 
@@ -23,7 +23,7 @@ export class PrefixWatcherService {
 
   onInit() {
     this.client.on('message', async (message) => {
-      const guildPrefix = await this.prefixRepo.getPrefix(message.guild.id)
+      const guildPrefix = await this.guildRepo.getPrefix(message.guild.id)
 
       const extractedCommand = matchPrefix(guildPrefix, message.content)
       if (extractedCommand === false) {

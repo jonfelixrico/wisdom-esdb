@@ -5,18 +5,30 @@ import { generateId } from '@utils/id-generator.util'
 import { ErrorCodes } from '@models/error-codes.enum'
 import { IPendingQuote } from '@models/pending-quote.interface'
 import { QuoteStatus, getQuoteStatus } from '@utils/quote-utils.util'
+import { GuildRepository } from '@repositories/models/guild-repository.abstract'
+import moment from 'moment-timezone'
 
 const EXPIRE_REJECT_CAUSE = 'QUOTE_EXPIRED'
 
 @Injectable()
 export class QuoteInteractorService {
-  constructor(private quoteRepo: QuoteRepository) {}
+  constructor(
+    private quoteRepo: QuoteRepository,
+    private guildRepo: GuildRepository,
+  ) {}
 
   async submitQuote(quote: IQuoteBody) {
+    const { guild } = quote
     const id = generateId(quote)
+    const { guildRepo } = this
+    const expireDt = moment()
+      .tz(await guildRepo.getTimezone(guild))
+      .add(await guildRepo.getDaysForQuoteExpiration(guild), 'days')
+      .toDate()
 
     return await this.quoteRepo.submitQuote({
       id,
+      expireDt,
       ...quote,
     })
   }
