@@ -8,6 +8,7 @@ import { QuoteStatus, getQuoteStatus } from '@utils/quote-utils.util'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
 import moment from 'moment-timezone'
 
+// TODO make an enum for this
 const EXPIRE_REJECT_CAUSE = 'QUOTE_EXPIRED'
 
 @Injectable()
@@ -48,10 +49,9 @@ export class QuoteInteractorService {
     return quote as IPendingQuote
   }
 
-  async approveQuote(quoteId: string) {
-    const quote = await this.findPendingQuote(quoteId)
-
-    return await this.quoteRepo.approveQuote((quote as IPendingQuote).id)
+  async approveQuote(quoteId: string, cause: string) {
+    const { id } = await this.findPendingQuote(quoteId)
+    await this.quoteRepo.approveQuote(id, cause)
   }
 
   /**
