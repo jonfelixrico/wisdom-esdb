@@ -1,4 +1,5 @@
-const PREFIX_MATCHER_REGEXP = /^(\S+)\s+(\S+?)\s*$/
+// <prefix> <other content>
+const PREFIX_MATCHER_REGEXP = /^(\S+)\s+(.+?)\s*$/
 
 export function matchPrefix(prefix: string, stringToMatch: string) {
   if (!PREFIX_MATCHER_REGEXP.test(stringToMatch)) {
