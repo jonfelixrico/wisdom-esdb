@@ -6,6 +6,7 @@ import { EventStoreClientProvider } from './providers/event-store-client.provide
 import { GuildRepositoryImplService } from './services/guild-repository-impl/guild-repository-impl.service'
 import { QuoteRepository } from '@repositories/models/quote-repository.abstract'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
+import { ReceiveRepository } from '@repositories/models/receive-repository.abstract'
 
 @Module({
   providers: [
@@ -17,10 +18,18 @@ import { GuildRepository } from '@repositories/models/guild-repository.abstract'
       useClass: GuildRepositoryImplService,
       provide: GuildRepository,
     },
-    ReceiveRepositoryImplService,
+    {
+      useClass: ReceiveRepositoryImplService,
+      provide: ReceiveRepository,
+    },
     EventStoreClientProvider,
   ],
 
-  exports: [EventStoreDBClient],
+  exports: [
+    EventStoreDBClient,
+    QuoteRepository,
+    GuildRepository,
+    ReceiveRepository,
+  ],
 })
 export class RepositoriesModule {}
