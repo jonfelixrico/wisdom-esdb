@@ -6,7 +6,7 @@ import { ErrorCodes } from '@models/error-codes.enum'
 import { IPendingQuote } from '@models/pending-quote.interface'
 import { QuoteStatus, getQuoteStatus } from '@utils/quote-utils.util'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 
 // TODO make an enum for this
 const EXPIRE_REJECT_CAUSE = 'QUOTE_EXPIRED'
@@ -22,10 +22,14 @@ export class QuoteInteractorService {
     const { guild } = quote
     const id = generateId(quote)
     const { guildRepo } = this
-    const expireDt = moment()
-      .tz(await guildRepo.getTimezone(guild))
-      .add(await guildRepo.getDaysForQuoteExpiration(guild), 'days')
-      .toDate()
+
+    const timezone = await guildRepo.getTimezone(guild)
+    const daysUntilExpiration = await guildRepo.getDaysForQuoteExpiration(guild)
+
+    const expireDt = DateTime.now()
+      .setZone(timezone)
+      .plus({ days: daysUntilExpiration })
+      .toJSDate()
 
     return await this.quoteRepo.submitQuote({
       id,
