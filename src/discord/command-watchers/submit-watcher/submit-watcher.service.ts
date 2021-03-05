@@ -67,7 +67,7 @@ export class SubmitWatcherService {
    * @param content
    */
   private isContentFreeOfDiscordTags(content: string) {
-    return DISCORD_TAG_REGEXP.test(content)
+    return !DISCORD_TAG_REGEXP.test(content)
   }
 
   private isSubmissionClean(content: string, author: string, message: Message) {
@@ -95,23 +95,21 @@ export class SubmitWatcherService {
     message.react('🌬️')
     const response = await message.channel.send('🤔')
 
-    try {
-      const submitDt = new Date()
-      const submitted = await this.quoteInteractor.submitQuote({
-        author,
-        content,
-        year: parsedYear || null,
-        submitDt,
-        submitBy: message.author.id,
+    const submitDt = new Date()
+    const submitted = await this.quoteInteractor.submitQuote({
+      author,
+      content,
+      year: parsedYear || null,
+      submitDt,
+      submitBy: message.author.id,
 
-        channel: message.channel.id,
-        guild: message.guild.id,
-        message: response.id,
-      })
+      channel: message.channel.id,
+      guild: message.guild.id,
+      message: response.id,
+    })
 
-      // TODO format this properly
-      await response.edit(JSON.stringify(submitted))
-    } catch (e) {}
+    // TODO format this properly
+    await response.edit(JSON.stringify(submitted))
   }
 
   get commandBus$() {
