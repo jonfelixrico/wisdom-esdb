@@ -125,6 +125,6 @@ export class SubmitWatcherService {
   }
 
   private listenToCommandBus() {
-    this.watcher.commandBus.subscribe(this.handler.bind(this))
+    this.commandBus$.subscribe(this.handler.bind(this))
   }
 }
