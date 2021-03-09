@@ -92,24 +92,32 @@ export class SubmitWatcherService {
     }
 
     // these are ways to let the user know that their command has been acknowledged
-    message.react('🌬️')
-    const response = await message.channel.send('🤔')
+    const response = await message.channel.send(
+      `${message.author}, we're processing your submission. Please stand by.`,
+    )
 
-    const submitDt = new Date()
-    const submitted = await this.quoteInteractor.submitQuote({
-      author,
-      content,
-      year: parsedYear || null,
-      submitDt,
-      submitBy: message.author.id,
+    try {
+      const submitDt = new Date()
+      const submitted = await this.quoteInteractor.submitQuote({
+        author,
+        content,
+        year: parsedYear || null,
+        submitDt,
+        submitBy: message.author.id,
 
-      channel: message.channel.id,
-      guild: message.guild.id,
-      message: response.id,
-    })
+        channel: message.channel.id,
+        guild: message.guild.id,
+        message: response.id,
+      })
 
-    // TODO format this properly
-    await response.edit(JSON.stringify(submitted))
+      // TODO format this properly
+      await response.edit(JSON.stringify(submitted))
+    } catch (e) {
+      // TODO handle expected and unexpected errors
+      await response.edit(
+        `${message.author}, something wrong went wrong while processing your submission. Try again later, maybe?`,
+      )
+    }
   }
 
   get commandBus$() {

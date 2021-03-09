@@ -16,19 +16,29 @@ export class ReceiveWatcherService {
   }
 
   async handler({ message }: ICommandBusPayload) {
-    await message.react('🌬️')
-    const response = await message.channel.send('🤔')
+    const { author } = message
+    const response = await message.channel.send(
+      `${author}, we're working on it. Please stand by.`,
+    )
 
-    const received = await this.receiveInteractor.receiveQuote({
-      channel: message.channel.id,
-      guild: message.guild.id,
-      message: response.id,
+    try {
+      const received = await this.receiveInteractor.receiveQuote({
+        channel: message.channel.id,
+        guild: message.guild.id,
+        message: response.id,
 
-      receiveBy: message.author.id,
-      receiveDt: new Date(),
-    })
+        receiveBy: message.author.id,
+        receiveDt: new Date(),
+      })
 
-    await response.edit(JSON.stringify(received))
+      // TODO format this
+      await response.edit(JSON.stringify(received))
+    } catch (e) {
+      // TODO handle expected and unexpected errors
+      await response.edit(
+        `${author}, something seems to have gone wrong while trying to get some wisdom. Maybe try again later?`,
+      )
+    }
   }
 
   get commandBus$() {
