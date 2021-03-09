@@ -22,7 +22,7 @@ export class QuoteRepositoryImplService extends QuoteRepository {
   private pending: { [key: string]: IPendingQuote } = {}
   private dropped: { [key: string]: IDroppedQuote } = {}
 
-  async submitQuote(quote: IPendingQuote): Promise<IPendingQuote> {
+  async createPendingQuote(quote: IPendingQuote): Promise<IPendingQuote> {
     const submitQuoteEvent = jsonEvent({
       type: EsdbEvents.QUOTE_SUBMITTED,
       data: { ...quote },

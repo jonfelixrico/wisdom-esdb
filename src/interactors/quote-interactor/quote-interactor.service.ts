@@ -31,7 +31,7 @@ export class QuoteInteractorService {
       .plus({ days: daysUntilExpiration })
       .toJSDate()
 
-    return await this.quoteRepo.submitQuote({
+    return await this.quoteRepo.createPendingQuote({
       id,
       expireDt,
       ...quote,
