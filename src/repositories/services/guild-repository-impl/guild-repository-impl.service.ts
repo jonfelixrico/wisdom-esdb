@@ -5,6 +5,10 @@ import { Snowflake } from 'discord.js'
 
 @Injectable()
 export class GuildRepositoryImplService extends GuildRepository {
+  async getApprovalRequiredCount(guild: string): Promise<number> {
+    return 3
+  }
+
   async getApprovalEmoji(guild: Snowflake) {
     return '🤔'
   }

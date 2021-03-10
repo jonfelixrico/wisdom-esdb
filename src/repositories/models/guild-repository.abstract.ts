@@ -8,4 +8,6 @@ export abstract class GuildRepository {
   abstract getTimezone(guild: Snowflake): Promise<string>
 
   abstract getApprovalEmoji(guild: Snowflake): Promise<string>
+
+  abstract getApprovalRequiredCount(guild: Snowflake): Promise<number>
 }
