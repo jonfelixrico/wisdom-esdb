@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { Client, Message } from 'discord.js'
-import { IPendingQuote } from '@models/pending-quote.interface'
 import { race, Subject, timer } from 'rxjs'
 import { take, filter, mapTo } from 'rxjs/operators'
 import {
@@ -10,12 +9,14 @@ import {
 } from '@discord/utils/discord-reaction.util'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
 import { finalize } from 'rxjs/operators'
+import { IPendingQuote } from '@models/pending-quote.interface'
 
-export type CollectionStatus = 'EXPIRED' | 'COMPLETED'
+type Status = 'EXPIRED' | 'COMPLETED'
+export type CollectionFinishedEvent = [IPendingQuote, Message, Status]
 
 @Injectable()
 export class ReactionWatcherService {
-  private emitter = new Subject<[string, CollectionStatus]>()
+  private emitter = new Subject<CollectionFinishedEvent>()
 
   constructor(private client: Client, private guildRepo: GuildRepository) {}
 
@@ -23,12 +24,12 @@ export class ReactionWatcherService {
     return this.client.user.id
   }
 
-  private emit(id: string, status: CollectionStatus) {
-    this.emitter.next([id, status])
+  private emit(quote: IPendingQuote, message: Message, status: Status) {
+    this.emitter.next([quote, message, status])
   }
 
   async watch(message: Message, pendingQuote: IPendingQuote) {
-    const { expireDt, id, guild } = pendingQuote
+    const { expireDt, guild } = pendingQuote
 
     const millisToExpireDt = expireDt.getTime() - Date.now()
 
@@ -37,7 +38,7 @@ export class ReactionWatcherService {
      * No need to watch for reactions if the quote/message to watch has already expired.
      */
     if (millisToExpireDt <= 0) {
-      this.emit(pendingQuote.id, 'EXPIRED')
+      this.emit(pendingQuote, message, 'EXPIRED')
       return
     }
 
@@ -56,7 +57,7 @@ export class ReactionWatcherService {
       user.id !== clientId
 
     const expire$ = timer(millisToExpireDt).pipe(
-      mapTo<number, CollectionStatus>('EXPIRED'),
+      mapTo<number, Status>('EXPIRED'),
     )
 
     const { observable, stop } = watchReactions(message, filterFn)
@@ -72,7 +73,7 @@ export class ReactionWatcherService {
       }),
       take(1),
 
-      mapTo<ReactionPair[], CollectionStatus>('COMPLETED'),
+      mapTo<ReactionPair[], Status>('COMPLETED'),
     )
 
     /*
@@ -84,6 +85,6 @@ export class ReactionWatcherService {
      */
     race(expire$, reactions$)
       .pipe(finalize(() => stop()))
-      .subscribe((status) => this.emit(id, status))
+      .subscribe((status) => this.emit(pendingQuote, message, status))
   }
 }
