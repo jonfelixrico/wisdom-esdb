@@ -58,6 +58,11 @@ export class QuoteInteractorService {
     await this.quoteRepo.approveQuote(id, cause)
   }
 
+  async dropQuote(quoteId: string, cause: string) {
+    const { id } = await this.findPendingQuote(quoteId)
+    await this.quoteRepo.dropQuote(id, cause)
+  }
+
   /**
    * Checks a pending quote if it's expired. If the provided `quoteId`
    * is not associated with any quote, or if the assoc. quote is already
