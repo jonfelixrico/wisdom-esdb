@@ -28,6 +28,10 @@ export class ReactionWatcherService {
     this.emitter.next([quote, message, status])
   }
 
+  get events$() {
+    return this.emitter.asObservable()
+  }
+
   async watch(message: Message, pendingQuote: IPendingQuote) {
     const { expireDt, guild } = pendingQuote
 
