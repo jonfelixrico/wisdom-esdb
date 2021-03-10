@@ -83,7 +83,7 @@ export function watchReactions(
 
   const updateCount = updateCountFactory(subject, reactionMap)
 
-  const collector = message.createReactionCollector(filterFn)
+  const collector = message.createReactionCollector(filterFn, { dispose: true })
 
   collector.on('collect', ({ emoji }) => {
     updateCount(emoji)
