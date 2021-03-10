@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
+import { Snowflake } from 'discord.js'
 
 @Injectable()
 export class GuildRepositoryImplService extends GuildRepository {
-  async getPrefix(guildId: string): Promise<string> {
+  async getApprovalEmoji(guild: Snowflake) {
+    return '🤔'
+  }
+
+  async getPrefix(guild: Snowflake): Promise<string> {
     return '!wisdom'
   }
 
-  async getDaysForQuoteExpiration(guildId: string): Promise<number> {
+  async getDaysForQuoteExpiration(guild: Snowflake): Promise<number> {
     return 7
   }
 
-  async getTimezone(guildId: string): Promise<string> {
+  async getTimezone(guild: Snowflake): Promise<string> {
     return 'Asia/Manila'
   }
 }

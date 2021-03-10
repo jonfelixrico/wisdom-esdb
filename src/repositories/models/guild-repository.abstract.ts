@@ -1,9 +1,11 @@
 import { Snowflake } from 'discord.js'
 
 export abstract class GuildRepository {
-  abstract getPrefix(guildId: Snowflake): Promise<string>
+  abstract getPrefix(guild: Snowflake): Promise<string>
 
-  abstract getDaysForQuoteExpiration(guildId: Snowflake): Promise<number>
+  abstract getDaysForQuoteExpiration(guild: Snowflake): Promise<number>
 
-  abstract getTimezone(guildId: string): Promise<string>
+  abstract getTimezone(guild: Snowflake): Promise<string>
+
+  abstract getApprovalEmoji(guild: Snowflake): Promise<string>
 }
