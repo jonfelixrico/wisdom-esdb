@@ -6,6 +6,7 @@ import { map, filter } from 'rxjs/operators'
 import { Message } from 'discord.js'
 import { DISCORD_TAG_REGEXP } from '@discord/utils/discord-utils.util'
 import { ReactionWatcherService } from '@discord/services/reaction-watcher/reaction-watcher.service'
+import { GuildRepository } from '@repositories/models/guild-repository.abstract'
 
 const COMMAND_PREFIX = 'submit'
 
@@ -29,6 +30,7 @@ export class SubmitWatcherService {
     private watcher: PrefixWatcherService,
     private quoteInteractor: QuoteInteractorService,
     private reactionWatcher: ReactionWatcherService,
+    private guildRespository: GuildRepository,
   ) {
     this.listenToCommandBus()
   }
@@ -112,8 +114,13 @@ export class SubmitWatcherService {
         message: response.id,
       })
 
+      const approvalEmoji = await this.guildRespository.getApprovalEmoji(
+        message.guild.id,
+      )
+
       // TODO format this properly
       await response.edit(JSON.stringify(submitted))
+      await response.react(approvalEmoji)
       this.reactionWatcher.watch(response, submitted)
     } catch (e) {
       // TODO handle expected and unexpected errors
