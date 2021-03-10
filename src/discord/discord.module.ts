@@ -5,6 +5,7 @@ import { SubmitWatcherService } from './command-watchers/submit-watcher/submit-w
 import { PrefixWatcherService } from './services/prefix-watcher/prefix-watcher.service'
 import { InteractorsModule } from '@interactors/interactors.module'
 import { RepositoriesModule } from '@/repositories/repositories.module'
+import { ReactionWatcherService } from './services/reaction-watcher/reaction-watcher.service'
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { RepositoriesModule } from '@/repositories/repositories.module'
     ReceiveWatcherService,
     SubmitWatcherService,
     PrefixWatcherService,
+    ReactionWatcherService,
   ],
 
   imports: [InteractorsModule, RepositoriesModule],
