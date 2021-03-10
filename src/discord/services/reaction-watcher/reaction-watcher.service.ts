@@ -4,7 +4,7 @@ import { race, Subject, timer } from 'rxjs'
 import { take, filter, mapTo } from 'rxjs/operators'
 import {
   ReactionFilter,
-  ReactionPair,
+  IReaction,
   watchReactions,
 } from '@discord/utils/discord-reaction.util'
 import { GuildRepository } from '@repositories/models/guild-repository.abstract'
@@ -72,12 +72,12 @@ export class ReactionWatcherService {
        * for the message has been reached.
        */
       filter((emitted) => {
-        const pair = emitted.find(([emoji]) => emoji.name === approvalEmoji)
+        const pair = emitted.find(({ emoji }) => emoji.name === approvalEmoji)
         return pair && pair[1] >= requiredCount
       }),
       take(1),
 
-      mapTo<ReactionPair[], Status>('COMPLETED'),
+      mapTo<IReaction, Status>('COMPLETED'),
     )
 
     /*

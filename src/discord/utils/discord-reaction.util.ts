@@ -11,8 +11,14 @@ export interface IEmojiDetails {
   identifier: string
 }
 
-export type ReactionPair = [IEmojiDetails, number]
-type ReactionPairMap = { [emojiId: string]: ReactionPair }
+export interface IReaction {
+  emoji: IEmojiDetails
+  count: number
+}
+
+interface IReactionMap {
+  [key: string]: IReaction
+}
 
 function getKey({ name, identifier }: IEmojiDetails) {
   return [name, identifier].join('/')
@@ -22,26 +28,29 @@ function extractEmojiDetails({ id, name, identifier }: Emoji): IEmojiDetails {
   return { id, name, identifier }
 }
 
-function convertToArray(map: ReactionPairMap): ReactionPair[] {
+function convertToArray(map: IReactionMap): IReaction[] {
   return chain(map)
     .values()
-    .sortBy(([emoji]) => getKey(emoji))
-    .map((pair) => clone(pair))
+    .sortBy(({ emoji }) => getKey(emoji))
+    .map((reaction) => clone(reaction))
     .value()
 }
 
 function updateCountFactory(
-  subject: BehaviorSubject<ReactionPair[]>,
-  map: ReactionPairMap,
+  subject: BehaviorSubject<IReaction[]>,
+  map: IReactionMap,
 ) {
   return (emoji: Emoji, valueChange = 1) => {
     const key = getKey(emoji)
 
     if (map[key] === undefined) {
-      map[key] = [extractEmojiDetails(emoji), 0]
+      map[key] = {
+        emoji: extractEmojiDetails(emoji),
+        count: 0,
+      }
     }
 
-    map[key][1] += valueChange
+    map[key].count += valueChange
 
     subject.next(convertToArray(map))
   }
@@ -50,7 +59,7 @@ function updateCountFactory(
 function getInitialReactions(
   message: Message,
   filterFn: ReactionFilter,
-): ReactionPairMap {
+): IReactionMap {
   const expandedReactions = message.reactions.cache
     .array()
     .map<[MessageReaction, User][]>((reaction) =>
@@ -61,12 +70,12 @@ function getInitialReactions(
 
   return chain(expandedReactions)
     .groupBy(([reaction]) => getKey(reaction.emoji))
-    .mapValues<ReactionPair>((arrOfExpandedReactions) => {
+    .mapValues<IReaction>((arrOfExpandedReactions) => {
       const [reaction] = arrOfExpandedReactions[0]
-      return [
-        extractEmojiDetails(reaction.emoji),
-        arrOfExpandedReactions.length,
-      ]
+      return {
+        emoji: extractEmojiDetails(reaction.emoji),
+        count: arrOfExpandedReactions.length,
+      }
     })
     .value()
 }
@@ -77,9 +86,7 @@ export function watchReactions(
 ) {
   const reactionMap = getInitialReactions(message, filterFn)
 
-  const subject = new BehaviorSubject<ReactionPair[]>(
-    convertToArray(reactionMap),
-  )
+  const subject = new BehaviorSubject<IReaction[]>(convertToArray(reactionMap))
 
   const updateCount = updateCountFactory(subject, reactionMap)
 
