@@ -5,6 +5,7 @@ import { matchPrefix } from '@discord/utils/command-utils.util'
 import { map, filter } from 'rxjs/operators'
 import { Message } from 'discord.js'
 import { DISCORD_TAG_REGEXP } from '@discord/utils/discord-utils.util'
+import { ReactionWatcherService } from '@discord/services/reaction-watcher/reaction-watcher.service'
 
 const COMMAND_PREFIX = 'submit'
 
@@ -27,6 +28,7 @@ export class SubmitWatcherService {
   constructor(
     private watcher: PrefixWatcherService,
     private quoteInteractor: QuoteInteractorService,
+    private reactionWatcher: ReactionWatcherService,
   ) {
     this.listenToCommandBus()
   }
@@ -112,6 +114,7 @@ export class SubmitWatcherService {
 
       // TODO format this properly
       await response.edit(JSON.stringify(submitted))
+      this.reactionWatcher.watch(response, submitted)
     } catch (e) {
       // TODO handle expected and unexpected errors
       await response.edit(
